@@ -24,7 +24,7 @@ struct Opt {
 
 lazy_static! {
     static ref SOCKET: UdpSocket =
-        UdpSocket::bind("127.0.0.1:0").expect("couldn't bind to address");
+        UdpSocket::bind("0.0.0.0:0").expect("couldn't bind to address");
 }
 
 fn main() {
@@ -57,14 +57,14 @@ fn run() -> Result<(), Box<dyn Error>> {
     let in_port = input_ports.get(opt.input).expect("invalid input device");
     let out_port = output_ports.get(opt.output).expect("invalid output device");
 
-    SOCKET.connect(opt.server_addr)?;
+    SOCKET.connect(&opt.server_addr)?;
 
     let _input_connection = midi_in.connect(
         &in_port,
         "networked-midi",
         move |stamp, message, _| {
             println!("{}: {:?} (len = {})", stamp, message, message.len());
-            SOCKET.send(message).expect("error");
+            SOCKET.send(message).expect("error sending message");
         },
         (),
     )?;

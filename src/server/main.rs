@@ -7,7 +7,7 @@ use structopt::StructOpt;
 #[structopt()]
 struct Opt {
     #[structopt(default_value = "9000", short, long, required_if("list", "false"))]
-    port: usize,
+    port: u16,
 }
 
 fn main() {
@@ -19,7 +19,7 @@ fn main() {
 
 fn run() -> Result<(), Box<dyn Error>> {
     let opt = Opt::from_args();
-    let socket = UdpSocket::bind(format!("{}:{}", "127.0.0.1", opt.port.to_string()))?;
+    let socket = UdpSocket::bind(("0.0.0.0", opt.port))?;
     let mut clients: HashSet<SocketAddr> = HashSet::new();
 
     loop {
